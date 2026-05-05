@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zuhayer (Jimmy) Noman — Chemical Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07090f;
+    --surface: #0d1117;
+    --surface2: #121820;
+    --border: rgba(232, 160, 32, 0.15);
+    --gold: #e8a020;
+    --gold-dim: rgba(232, 160, 32, 0.6);
+    --blue: #4aaed9;
+    --text: #c8d4e0;
+    --text-dim: #6b7c93;
+    --text-bright: #eaf0f7;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Cormorant Garamond', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid var(--gold-dim); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+  a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%, -50%) scale(2); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.75rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(7, 9, 15, 0.93);
+    backdrop-filter: blur(14px);
+    padding: 1rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: 0.75rem;
+    color: var(--gold); letter-spacing: 0.25em; text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none; font-size: 0.68rem;
+    letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative; height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; overflow: hidden;
+  }
+  #hero-canvas { position: absolute; inset: 0; opacity: 0.45; }
+  .hero-content { position: relative; z-index: 2; text-align: center; }
+
+  .available-badge {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    font-size: 0.6rem; letter-spacing: 0.3em; color: var(--blue);
+    border: 1px solid rgba(74, 174, 217, 0.3); padding: 0.4rem 1.1rem;
+    text-transform: uppercase; margin-bottom: 1.8rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards;
+  }
+  .dot {
+    width: 6px; height: 6px; background: var(--blue);
+    border-radius: 50%; animation: blink 2s ease-in-out infinite;
+  }
+  .hero-label {
+    font-size: 0.65rem; letter-spacing: 0.4em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+  .hero-name {
+    font-family: var(--serif); font-size: clamp(4.5rem, 11vw, 10rem);
+    font-weight: 300; color: var(--text-bright); line-height: 0.88;
+    letter-spacing: -0.02em;
+    opacity: 0; animation: fadeUp 1s ease 0.5s forwards;
+  }
+  .hero-name em { color: var(--gold); font-style: italic; font-weight: 300; }
+  .hero-sub {
+    margin-top: 2.2rem; font-size: 0.68rem; letter-spacing: 0.25em;
+    color: var(--text-dim); text-transform: uppercase;
+    opacity: 0; animation: fadeUp 0.8s ease 0.9s forwards;
+  }
+  .hero-sub span { color: var(--text); margin: 0 0.6rem; }
+
+  .scroll-hint {
+    position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+    opacity: 0; animation: fadeIn 1s ease 1.6s forwards;
+  }
+  .scroll-hint span { font-size: 0.58rem; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; }
+  .scroll-line {
+    width: 1px; height: 52px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── SECTION WINDOWS ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+  .section-window {
+    margin: 7rem 0;
+    opacity: 0; transform: translateY(65px);
+    transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .section-window.visible { opacity: 1; transform: translateY(0); }
+
+  .section-label {
+    font-size: 0.58rem; letter-spacing: 0.45em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 300; color: var(--text-bright); margin-bottom: 3rem; line-height: 1.1;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3.5rem; align-items: start; }
+  .about-text p { font-size: 0.82rem; line-height: 2.1; color: var(--text); margin-bottom: 1.3rem; }
+
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 1.5rem; position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .stat-card:hover { border-color: rgba(232,160,32,0.35); transform: translateY(-2px); }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, var(--gold), transparent);
+  }
+  .stat-number {
+    font-family: var(--serif); font-size: 2.6rem; color: var(--gold);
+    font-weight: 300; line-height: 1; margin-bottom: 0.5rem;
+  }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; }
+
+  /* ── EXPERIENCE ── */
+  .experience-list { display: flex; flex-direction: column; gap: 2rem; }
+  .exp-card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2.5rem; position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .exp-card:hover { border-color: rgba(232,160,32,0.35); transform: translateX(5px); }
+  .exp-card::after {
+    content: ''; position: absolute; left: 0; top: 0;
+    width: 3px; height: 100%; background: var(--gold);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .exp-card:hover::after { opacity: 1; }
+
+  .exp-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 0.7rem; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .exp-title {
+    font-family: var(--serif); font-size: 1.5rem;
+    font-weight: 400; color: var(--text-bright);
+  }
+  .exp-date {
+    font-size: 0.62rem; letter-spacing: 0.15em; color: var(--gold);
+    text-transform: uppercase; white-space: nowrap; padding-top: 0.3rem;
+  }
+  .exp-company { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1.5rem; letter-spacing: 0.08em; }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  .exp-bullets li {
+    font-size: 0.77rem; line-height: 1.85; color: var(--text);
+    padding-left: 1.3rem; position: relative;
+  }
+  .exp-bullets li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 0.68rem; }
+
+  /* ── PROJECTS ── */
+  .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .project-card {
+    background: var(--surface); border: 1px solid var(--border);
+    overflow: hidden; transition: border-color 0.3s, transform 0.3s;
+  }
+  .project-card:hover { border-color: rgba(232,160,32,0.4); transform: translateY(-5px); }
+  .project-card.featured { grid-column: span 2; }
+
+  .project-img {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--surface2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .project-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+  .project-card:hover .project-img img { transform: scale(1.04); }
+
+  /* ── SLIDESHOW ── */
+  .slideshow { position: relative; width: 100%; height: 100%; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.7s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slide.active { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .slide-dots {
+    position: absolute; bottom: 0.6rem; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 0.45rem; z-index: 5;
+  }
+  .slide-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.35); transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .slide-dot.active { background: var(--gold); transform: scale(1.3); }
+
+  /* ── IMAGE PLACEHOLDER ── shown until you add a real image ── */
+  .img-placeholder {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 0.8rem; width: 100%; height: 100%;
+    background: var(--surface2);
+  }
+  .img-placeholder .ph-icon { font-size: 2rem; opacity: 0.3; }
+  .img-placeholder .ph-label {
+    font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim); opacity: 0.6; text-align: center; padding: 0 1rem;
+  }
+  .img-placeholder .ph-hint {
+    font-size: 0.55rem; color: var(--gold); opacity: 0.5; letter-spacing: 0.1em;
+  }
+
+  .project-body { padding: 1.75rem; }
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem; }
+  .tag {
+    font-size: 0.56rem; letter-spacing: 0.15em; padding: 0.25rem 0.65rem;
+    background: rgba(232,160,32,0.07); border: 1px solid rgba(232,160,32,0.2);
+    color: var(--gold); text-transform: uppercase;
+  }
+  .project-title { font-family: var(--serif); font-size: 1.35rem; color: var(--text-bright); font-weight: 400; margin-bottom: 0.75rem; line-height: 1.3; }
+  .project-desc { font-size: 0.74rem; line-height: 1.95; color: var(--text); }
+  .project-date { font-size: 0.58rem; color: var(--text-dim); margin-top: 1.1rem; letter-spacing: 0.12em; }
+
+  /* ── SKILLS ── */
+  .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; }
+  .skill-group { background: var(--surface); border: 1px solid var(--border); padding: 2rem; }
+  .skill-group-title {
+    font-size: 0.62rem; letter-spacing: 0.3em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-items { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .skill-item {
+    font-size: 0.68rem; padding: 0.4rem 0.85rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); letter-spacing: 0.05em;
+    transition: all 0.25s;
+  }
+  .skill-item:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* ── EDUCATION ── */
+  .education-card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2.75rem; position: relative; overflow: hidden;
+  }
+  .education-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--blue), transparent);
+  }
+  .edu-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+  }
+  .edu-degree { font-family: var(--serif); font-size: 2rem; color: var(--text-bright); font-weight: 300; line-height: 1.2; }
+  .edu-uni { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.5rem; letter-spacing: 0.1em; }
+  .edu-date { font-size: 0.62rem; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; text-align: right; line-height: 2; }
+  .scholarship-badges { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .badge {
+    display: flex; align-items: center; gap: 0.6rem; font-size: 0.7rem;
+    color: var(--text); background: rgba(232,160,32,0.06);
+    border: 1px solid rgba(232,160,32,0.2); padding: 0.65rem 1.1rem;
+    transition: all 0.3s;
+  }
+  .badge:hover { border-color: var(--gold); background: rgba(232,160,32,0.1); }
+  .badge-icon { color: var(--gold); }
+
+  /* ── AWARDS ── */
+  .awards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .award-card {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 2rem; text-align: center; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .award-card:hover { border-color: rgba(232,160,32,0.4); background: var(--surface2); transform: translateY(-3px); }
+  .award-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .award-card:hover::before { opacity: 1; }
+  .award-icon { font-size: 2rem; margin-bottom: 1.1rem; display: block; }
+  .award-title { font-family: var(--serif); font-size: 1.15rem; color: var(--text-bright); font-weight: 400; margin-bottom: 0.6rem; line-height: 1.3; }
+  .award-desc { font-size: 0.68rem; color: var(--text-dim); line-height: 1.8; }
+
+  /* ── CONTACT ── */
+  #contact { margin: 4rem 0 0; }
+  .contact-window {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 4.5rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .contact-window::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(232,160,32,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .contact-title { font-family: var(--serif); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; color: var(--text-bright); margin-bottom: 0.8rem; }
+  .contact-sub { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; margin-bottom: 3rem; line-height: 1.8; }
+  .contact-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+  .contact-link {
+    display: flex; align-items: center; gap: 0.65rem; font-size: 0.72rem;
+    color: var(--text); text-decoration: none; letter-spacing: 0.08em;
+    padding: 0.85rem 1.6rem; border: 1px solid var(--border); transition: all 0.3s;
+  }
+  .contact-link:hover { border-color: var(--gold); color: var(--gold); }
+  .link-icon { color: var(--gold); }
+
+  footer {
+    text-align: center; padding: 2.5rem;
+    font-size: 0.58rem; letter-spacing: 0.25em; color: var(--text-dim);
+    text-transform: uppercase; border-top: 1px solid var(--border); margin-top: 4rem;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    main { padding: 0 1.25rem; }
+    .about-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .awards-grid { grid-template-columns: 1fr; }
+    .contact-window { padding: 2.5rem 1.5rem; }
+    .section-window { margin: 4.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-logo">ZN</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="available-badge">
+      <span class="dot"></span>
+      Available · Co-op Sep 2026
+    </div>
+    <div class="hero-label">Chemical Engineer &nbsp;·&nbsp; Battery Researcher</div>
+    <h1 class="hero-name">Zuhayer <span style="font-size:0.55em;font-style:italic;opacity:0.75;">(Jimmy)</span><br><em>Noman</em></h1>
+    <div class="hero-sub">
+      <span>Dalhousie University</span>·<span>Halifax, NS</span>·<span>RESL Lab</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════ -->
+<main>
+
+  <!-- ── 01 ABOUT ── -->
+  <section id="about" class="section-window">
+    <div class="section-label">01 — About</div>
+    <h2 class="section-title">Who I Am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a Chemical Engineering student at Dalhousie University with a focused interest in materials engineering and the thermodynamic, electrochemical, and structural properties of energy storage and conversion systems. My work spans both renewable and non-renewable energy domains — from the solid-state chemistry of intercalation materials and ionic transport mechanisms in next-generation cell chemistries, to the mechanical and thermal management challenges inherent in high-density energy systems.</p>
+        <p>I approach engineering problems at multiple scales: from characterising phase transformations and degradation kinetics at the material level, to designing precision mechanical assemblies and instrumented test infrastructure at the systems level. I'm equally comfortable running controlled electrochemical experiments, performing force and pressure calculations, or processing large multivariate datasets to extract actionable performance trends.</p>
+        <p>My longer-term interests lie at the intersection of material science and sustainable energy — understanding how the molecular architecture of electrode, electrolyte, and structural materials can be engineered to unlock safer, more efficient, and more scalable energy technologies across the full spectrum of applications.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <div class="stat-number">200+</div>
+          <div class="stat-label">Battery cells tested</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">7</div>
+          <div class="stat-label">Projects completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="font-size:1.5rem;padding-top:0.3rem;">Advanced</div>
+          <div class="stat-label">Lab techniques trained</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4.03</div>
+          <div class="stat-label">Current GPA</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 EXPERIENCE ── -->
+  <section id="experience" class="section-window">
+    <div class="section-label">02 — Experience</div>
+    <h2 class="section-title">Work History</h2>
+    <div class="experience-list">
+
+      <!-- EXPERIENCE 1 ──────────────────── -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Battery System Research Engineer</div>
+            <div class="exp-company">Dalhousie University RESL &nbsp;·&nbsp; Halifax, Nova Scotia</div>
+          </div>
+          <div class="exp-date">Jan 2026 — Present</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Tested and analysed ~200 lithium-ion and sodium-ion cells (layered oxide and poly-ionic chemistries) using NEWARE battery cyclers, evaluating performance metrics and long-term degradation trends.</li>
+          <li>Processed large experimental datasets in Excel, generating capacity-decay, resistance, temperature, and performance graphs to support battery research decisions.</li>
+          <li>Designed and fabricated five high-current modular cell-holder systems rated up to 100 A in SolidWorks, accommodating four cylindrical cell formats and reducing lab setup time.</li>
+          <li>Engineered adjustable compression plate assemblies for pouch and prismatic cells; developed an Excel spring-configuration tool for repeatable controlled testing conditions.</li>
+          <li>Assembled and wired a 600 V battery rack; completed Orion BMS support, Tesla pack handling, and strain-gauge force sensor calibration.</li>
+        </ul>
+      </div>
+
+      <!-- EXPERIENCE 2 ──────────────────── -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Lab Assistant</div>
+            <div class="exp-company">Lab-Science Diagnostic Centre &nbsp;·&nbsp; Dhaka, Bangladesh</div>
+          </div>
+          <div class="exp-date">May 2024 — Aug 2024</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Conducted biochemistry and sensitive blood tests with precision, ensuring 100% compliance with quality-control standards.</li>
+          <li>Assisted senior technicians in complex procedures; improved process preparation protocols, reducing errors by 15% and increasing overall test accuracy.</li>
+        </ul>
+      </div>
+
+      <!-- EXPERIENCE 3 ──────────────────── -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Lab Teaching Assistant</div>
+            <div class="exp-company">Zenith Education &nbsp;·&nbsp; Dhaka, Bangladesh</div>
+          </div>
+          <div class="exp-date">Aug 2022 — Aug 2023</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Delivered hands-on laboratory sessions and developed teaching materials to simplify complex experimental procedures and improve student engagement.</li>
+          <li>Resolved technical issues in lab settings, reducing downtime by 40% and maintaining uninterrupted learning environments.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 03 PROJECTS ── -->
+  <section id="projects" class="section-window">
+    <div class="section-label">03 — Projects</div>
+    <h2 class="section-title">Academic Work</h2>
+    <div class="projects-grid">
+
+      <!-- PROJECT 1 — FEATURED ──────────── -->
+      <!--
+        ╔══════════════════════════════════════════╗
+        ║  TO ADD IMAGE FOR THIS PROJECT:          ║
+        ║  1. Delete the <div class="img-placeholder"> block  ║
+        ║  2. Add: <img src="your-image.jpg" alt="High-Current Cell Holder"> ║
+        ╚══════════════════════════════════════════╝
+      -->
+      <div class="project-card featured">
+        <div class="project-img">
+          <!--
+            ══════════════════════════════════════════════════════════
+            PROJECT 1 — HIGH-CURRENT CELL HOLDER SYSTEM
+            SLIDESHOW: Add 1 to 3 images below (min 1, max 3).
+
+            HOW TO ADD IMAGES:
+              • Upload your image file to the same folder as this HTML file
+              • Copy the filename exactly (e.g. "cell-holder-1.jpg")
+              • Replace src="YOUR_IMAGE_1.jpg" with your actual filename
+              • To use only 1 image: delete the 2nd and 3rd <div class="slide"> blocks
+              • To use 2 images: delete only the 3rd block
+              • To use 3 images: fill in all three src values
+
+            EXAMPLE: src="cell-holder-front.jpg"
+            ══════════════════════════════════════════════════════════
+          -->
+          <div class="slideshow" data-slideshow>
+            <div class="slide active">
+              <div class="img-placeholder"><div class="ph-icon">⚡</div><div class="ph-label">Cell Holder System — Photo 1</div><div class="ph-hint">src="YOUR_IMAGE_1.jpg"</div></div>
+              <!-- REPLACE ABOVE PLACEHOLDER with: <img src="YOUR_IMAGE_1.jpg" alt="Cell Holder System"> -->
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">⚡</div><div class="ph-label">Cell Holder System — Photo 2</div><div class="ph-hint">src="YOUR_IMAGE_2.jpg"</div></div>
+              <!-- REPLACE ABOVE PLACEHOLDER with: <img src="YOUR_IMAGE_2.jpg" alt="Cell Holder System"> -->
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">⚡</div><div class="ph-label">Cell Holder System — Photo 3</div><div class="ph-hint">src="YOUR_IMAGE_3.jpg"</div></div>
+              <!-- REPLACE ABOVE PLACEHOLDER with: <img src="YOUR_IMAGE_3.jpg" alt="Cell Holder System"> -->
+            </div>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">SolidWorks</span>
+            <span class="tag">100A Testing</span>
+            <span class="tag">Battery Systems</span>
+            <span class="tag">Fabrication</span>
+            <span class="tag">Electrical Wiring</span>
+          </div>
+          <div class="project-title">High-Current Cell Holder System</div>
+          <div class="project-desc">Designed and fabricated modular fixtures for 18650/21700, 33140, and 46145 cylindrical cells, integrating 6 AWG current wiring, 20 AWG voltage taps, colour-coded channels, and insulation to support testing up to 100 A. Validated fixture performance through voltage-drop and resistance testing, achieving an average fixture resistance of approximately 1.129 mΩ.</div>
+          <div class="project-date">January 2026 — April 2026</div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img">
+          <!--
+            PROJECT 2 — COMPRESSION PLATE ASSEMBLY
+            Replace src values with your image filenames. Delete unused slide blocks.
+          -->
+          <div class="slideshow" data-slideshow>
+            <div class="slide active">
+              <div class="img-placeholder"><div class="ph-icon">🔧</div><div class="ph-label">Compression Plate — Photo 1</div><div class="ph-hint">src="YOUR_IMAGE_1.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🔧</div><div class="ph-label">Compression Plate — Photo 2</div><div class="ph-hint">src="YOUR_IMAGE_2.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🔧</div><div class="ph-label">Compression Plate — Photo 3</div><div class="ph-hint">src="YOUR_IMAGE_3.jpg"</div></div>
+            </div>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">SolidWorks</span>
+            <span class="tag">Excel</span>
+            <span class="tag">Mechanical Design</span>
+            <span class="tag">High-Current</span>
+          </div>
+          <div class="project-title">Compression Plate Assembly</div>
+          <div class="project-desc">Designed adjustable aluminum compression plates for pouch and prismatic cells with a custom Excel spring calculator. Developed high-current flat-terminal attachments — reducing voltage drop from ~200 mV to 60 mV after contact optimisation.</div>
+          <div class="project-date">January 2026 — April 2026</div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img">
+          <!--
+            PROJECT 3 — EXFOLIATING BAR SOAP
+            Replace src values with your image filenames. Delete unused slide blocks.
+          -->
+          <div class="slideshow" data-slideshow>
+            <div class="slide active">
+              <div class="img-placeholder"><div class="ph-icon">🧪</div><div class="ph-label">Bar Soap — Photo 1</div><div class="ph-hint">src="YOUR_IMAGE_1.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🧪</div><div class="ph-label">Bar Soap — Photo 2</div><div class="ph-hint">src="YOUR_IMAGE_2.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🧪</div><div class="ph-label">Bar Soap — Photo 3</div><div class="ph-hint">src="YOUR_IMAGE_3.jpg"</div></div>
+            </div>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Chemistry</span>
+            <span class="tag">Formulation</span>
+            <span class="tag">QC Testing</span>
+            <span class="tag">Material Science</span>
+          </div>
+          <div class="project-title">Exfoliating pH-Balanced Bar Soap</div>
+          <div class="project-desc">Developed a moisturising exfoliating soap for sensitive skin, maintaining pH 7.5–9, integrating activated carbon, and conducting quality and material testing for stability and safety.</div>
+          <div class="project-date">January 2025 — April 2025</div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img">
+          <!--
+            PROJECT 4 — AUTOMATED TRAFFIC LIGHT SYSTEM
+            Replace src values with your image filenames. Delete unused slide blocks.
+          -->
+          <div class="slideshow" data-slideshow>
+            <div class="slide active">
+              <div class="img-placeholder"><div class="ph-icon">🚦</div><div class="ph-label">Traffic Light — Photo 1</div><div class="ph-hint">src="YOUR_IMAGE_1.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🚦</div><div class="ph-label">Traffic Light — Photo 2</div><div class="ph-hint">src="YOUR_IMAGE_2.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🚦</div><div class="ph-label">Traffic Light — Photo 3</div><div class="ph-hint">src="YOUR_IMAGE_3.jpg"</div></div>
+            </div>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Circuit Design</span>
+            <span class="tag">Electronics</span>
+            <span class="tag">Automation</span>
+            <span class="tag">Transistors</span>
+          </div>
+          <div class="project-title">Automated Traffic Light System</div>
+          <div class="project-desc">Designed a bidirectional traffic control system with adaptive night dimming, using comparators, transistors, LEDs, mechanical design, and circuit integration to improve efficiency.</div>
+          <div class="project-date">September 2024 — December 2024</div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img">
+          <!--
+            PROJECT 5 — CATAPULT-LAUNCHING AUTONOMOUS CAR
+            Replace src values with your image filenames. Delete unused slide blocks.
+          -->
+          <div class="slideshow" data-slideshow>
+            <div class="slide active">
+              <div class="img-placeholder"><div class="ph-icon">🚗</div><div class="ph-label">Catapult Car — Photo 1</div><div class="ph-hint">src="YOUR_IMAGE_1.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🚗</div><div class="ph-label">Catapult Car — Photo 2</div><div class="ph-hint">src="YOUR_IMAGE_2.jpg"</div></div>
+            </div>
+            <div class="slide">
+              <div class="img-placeholder"><div class="ph-icon">🚗</div><div class="ph-label">Catapult Car — Photo 3</div><div class="ph-hint">src="YOUR_IMAGE_3.jpg"</div></div>
+            </div>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">IR Sensors</span>
+            <span class="tag">Sonar</span>
+            <span class="tag">Robotics</span>
+            <span class="tag">Motion Physics</span>
+          </div>
+          <div class="project-title">Catapult-Launching Autonomous Car</div>
+          <div class="project-desc">Built a sensor-driven autonomous vehicle using IR and sonar obstacle detection with an integrated catapult mechanism, applying motion physics for launch precision and real-time navigation.</div>
+          <div class="project-date">September 2023 — December 2023</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 04 SKILLS ── -->
+  <section id="skills" class="section-window">
+    <div class="section-label">04 — Skills</div>
+    <h2 class="section-title">Expertise</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">Laboratory &amp; Analytical</div>
+        <div class="skill-items">
+          <span class="skill-item">Experimental Design</span>
+          <span class="skill-item">Battery Testing</span>
+          <span class="skill-item">Process Optimisation</span>
+          <span class="skill-item">Quality Control</span>
+          <span class="skill-item">Safety Compliance</span>
+          <span class="skill-item">NEWARE Cyclers</span>
+          <span class="skill-item">Orion BMS</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Technical Tools</div>
+        <div class="skill-items">
+          <span class="skill-item">SolidWorks</span>
+          <span class="skill-item">MATLAB</span>
+          <span class="skill-item">MS Excel</span>
+          <span class="skill-item">Circuit Design</span>
+          <span class="skill-item">Mechanical Fabrication</span>
+          <span class="skill-item">High-Current Wiring</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Data Analysis</div>
+        <div class="skill-items">
+          <span class="skill-item">Capacity Fade Analysis</span>
+          <span class="skill-item">Internal Resistance Tracking</span>
+          <span class="skill-item">Technical Graphing</span>
+          <span class="skill-item">Large Dataset Processing</span>
+          <span class="skill-item">Spring Force Calculations</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Languages</div>
+        <div class="skill-items">
+          <span class="skill-item">English — Fluent</span>
+          <span class="skill-item">Bengali — Native</span>
+          <span class="skill-item">Hindi — Proficient</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 05 EDUCATION ── -->
+  <section id="education" class="section-window">
+    <div class="section-label">05 — Education</div>
+    <h2 class="section-title">Academic Background</h2>
+    <div class="education-card">
+      <div class="edu-header">
+        <div>
+          <div class="edu-degree">BEng in Chemical Engineering</div>
+          <div class="edu-uni">Dalhousie University &nbsp;·&nbsp; Halifax, Nova Scotia</div>
+        </div>
+        <div class="edu-date">
+          Sep 2023 — Present<br>
+          <span style="opacity:0.55">Expected Graduation: Fall 2028</span>
+        </div>
+      </div>
+      <div class="scholarship-badges">
+        <div class="badge"><span class="badge-icon">🏅</span> Chancellor's Scholarship</div>
+        <div class="badge"><span class="badge-icon">🌍</span> Global Scholar Award</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 06 AWARDS ── -->
+  <section id="awards" class="section-window">
+    <div class="section-label">06 — Recognition</div>
+    <h2 class="section-title">Awards &amp; Achievements</h2>
+    <div class="awards-grid">
+      <div class="award-card">
+        <span class="award-icon">⭐</span>
+        <div class="award-title">Daily Star Award × 2</div>
+        <div class="award-desc">Awarded twice for outstanding academic excellence and performance.</div>
+      </div>
+      <div class="award-card">
+        <span class="award-icon">🎓</span>
+        <div class="award-title">Cambridge Learners' Award</div>
+        <div class="award-desc">Recognised for exceptional achievement in Cambridge curriculum examinations.</div>
+      </div>
+      <div class="award-card">
+        <span class="award-icon">🔬</span>
+        <div class="award-title">National Science Olympiad — Top 10</div>
+        <div class="award-desc">Top 10 Finalist demonstrating analytical and problem-solving ability at a national level.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════════════════════════════════
+     CONTACT
+════════════════════════════════════════ -->
+<section id="contact">
+  <main>
+    <div class="contact-window section-window">
+      <div class="section-label" style="text-align:center;margin-bottom:1.5rem;">07 — Contact</div>
+      <div class="contact-title">Let's Connect</div>
+      <div class="contact-sub">
+        Available for co-op starting September 2026<br>
+        Open to research, engineering, and industry opportunities
+      </div>
+      <div class="contact-links">
+        <a href="mailto:Zuhayer.Noman@dal.ca" class="contact-link">
+          <span class="link-icon">✉</span> Zuhayer.Noman@dal.ca
+        </a>
+        <a href="tel:+19029898107" class="contact-link">
+          <span class="link-icon">📞</span> +1 902-989-8107
+        </a>
+        <!--
+          ══════════════════════════════════════
+          UPDATE YOUR LINKEDIN URL BELOW:
+          Replace href="#" with your actual LinkedIn URL
+          e.g. href="https://linkedin.com/in/your-profile"
+          ══════════════════════════════════════
+        -->
+        <a href="#" target="_blank" class="contact-link">
+          <span class="link-icon">🔗</span> LinkedIn Profile
+        </a>
+      </div>
+    </div>
+  </main>
+</section>
+
+<footer>
+  <p>© 2026 Zuhayer Noman &nbsp;·&nbsp; Chemical Engineer &nbsp;·&nbsp; Dalhousie University</p>
+</footer>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+  // ── CURSOR ──────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+  (function tick() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(tick);
+  })();
+
+  // ── NAVBAR SCROLL ────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── HERO PARTICLE CANVAS ─────────────────
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  const GOLD = 'rgba(232,160,32,';
+  const BLUE = 'rgba(74,174,217,';
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init) {
+      this.x  = Math.random() * canvas.width;
+      this.y  = init ? Math.random() * canvas.height : Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.35;
+      this.vy = (Math.random() - 0.5) * 0.35;
+      this.r  = Math.random() * 1.5 + 0.5;
+      this.c  = Math.random() > 0.65 ? BLUE : GOLD;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > canvas.width)  this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.c + '0.85)';
+      ctx.fill();
+    }
+  }
+
+  const pts = Array.from({ length: 75 }, () => new Particle());
+
+  (function frame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pts.length; i++) {
+      pts[i].update();
+      pts[i].draw();
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < 115) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = GOLD + (0.14 * (1 - d / 115)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  // ── SCROLL REVEAL ────────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.section-window').forEach(el => observer.observe(el));
+
+  // ── SLIDESHOWS ───────────────────────────
+  document.querySelectorAll('[data-slideshow]').forEach(sw => {
+    const slides = sw.querySelectorAll('.slide');
+    const dotsContainer = sw.querySelector('.slide-dots');
+    if (slides.length <= 1) { dotsContainer.style.display = 'none'; return; }
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'slide-dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(d);
+    });
+
+    let current = 0;
+    const dots = dotsContainer.querySelectorAll('.slide-dot');
+
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+
+    setInterval(() => goTo(current + 1), 3000);
+  });
+
+
+</script>
+
+</body>
+</html>
